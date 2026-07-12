@@ -30,6 +30,14 @@
           </label>
 
           <h2>2. Design settings</h2>
+        <p class="eyebrow">FullControl core · Friendly workflow</p>
+        <h1>Design simple toolpaths and export G-code without writing Python.</h1>
+        <p class="hero-copy">Choose a template, tune dimensions, generate G-code, then copy or download the result.</p>
+      </section>
+
+      <section class="workspace" aria-label="G-code generator">
+        <form id="design-form" class="panel controls">
+          <h2>1. Design settings</h2>
           <label>
             Template
             <select name="template" id="template"></select>
@@ -46,6 +54,9 @@
           </div>
           <label>Bed type<input name="bed_type" value="textured_pei" /></label>
           <button type="submit">Prepare print artifact</button>
+          </div>
+          <label>Printer profile<input name="printer_name" value="generic" /></label>
+          <button type="submit">Generate G-code</button>
           <p id="status" role="status"></p>
         </form>
 
@@ -59,6 +70,12 @@
           </div>
           <ul id="warnings" class="warnings" aria-label="Warnings"></ul>
           <pre id="artifact" aria-label="Prepared artifact preview"></pre>
+              <h2>2. Output</h2>
+              <p id="summary">No G-code generated yet.</p>
+            </div>
+            <button id="download" type="button" disabled>Download</button>
+          </div>
+          <pre id="gcode" aria-label="Generated G-code"></pre>
         </section>
       </section>
     </main>

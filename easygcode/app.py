@@ -13,6 +13,7 @@ from pydantic import ValidationError
 from .bambu import PrintService, list_profiles
 from .core import DesignSpec, generate_gcode, list_templates
 from .jobs import PrintJob
+from .core import DesignSpec, generate_gcode, list_templates
 
 _FRONTEND_DIR = Path(__file__).with_name("frontend")
 
@@ -47,6 +48,13 @@ class EasyGcodeRequestHandler(SimpleHTTPRequestHandler):
             else:
                 self.send_error(404, "Not found")
                 return
+        if self.path != "/api/gcode":
+            self.send_error(404, "Not found")
+            return
+
+        try:
+            payload = json.loads(self.rfile.read(int(self.headers.get("Content-Length", 0))) or b"{}")
+            result = generate_gcode(DesignSpec(**payload))
         except (json.JSONDecodeError, ValidationError, ValueError) as exc:
             self._send_json({"error": str(exc)}, status=400)
             return
