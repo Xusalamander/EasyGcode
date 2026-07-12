@@ -9,6 +9,27 @@
   <body>
     <main class="shell">
       <section class="hero">
+        <p class="eyebrow">FullControl core · Bambu-ready workflows</p>
+        <h1>Generate custom paths or hand off geometry to Bambu Studio.</h1>
+        <p class="hero-copy">Choose a template, pick a workflow, then download either a direct G-code package or an STL for Bambu Studio slicing.</p>
+      </section>
+
+      <section class="workspace" aria-label="Print job generator">
+        <form id="design-form" class="panel controls">
+          <h2>1. Print workflow</h2>
+          <label>
+            Mode
+            <select name="mode" id="mode">
+              <option value="bambu_studio">Bambu Studio slicing (recommended)</option>
+              <option value="direct">Custom path direct package (advanced)</option>
+            </select>
+          </label>
+          <label>
+            Printer
+            <select name="printer_id" id="printer"></select>
+          </label>
+
+          <h2>2. Design settings</h2>
         <p class="eyebrow">FullControl core · Friendly workflow</p>
         <h1>Design simple toolpaths and export G-code without writing Python.</h1>
         <p class="hero-copy">Choose a template, tune dimensions, generate G-code, then copy or download the result.</p>
@@ -28,6 +49,11 @@
             <label>Spacing (mm)<input name="spacing" type="number" value="5" min="0.1" step="0.1" /></label>
             <label>Print feedrate<input name="feedrate" type="number" value="1200" min="60" /></label>
             <label>Travel feedrate<input name="travel_feedrate" type="number" value="6000" min="60" /></label>
+            <label>Material<input name="material" value="PLA" /></label>
+            <label>Nozzle (mm)<input name="nozzle_diameter" type="number" value="0.4" min="0.1" step="0.05" /></label>
+          </div>
+          <label>Bed type<input name="bed_type" value="textured_pei" /></label>
+          <button type="submit">Prepare print artifact</button>
           </div>
           <label>Printer profile<input name="printer_name" value="generic" /></label>
           <button type="submit">Generate G-code</button>
@@ -37,6 +63,13 @@
         <section class="panel output">
           <div class="output-header">
             <div>
+              <h2>3. Review and download</h2>
+              <p id="summary">No artifact prepared yet.</p>
+            </div>
+            <button id="download" type="button" disabled>Download</button>
+          </div>
+          <ul id="warnings" class="warnings" aria-label="Warnings"></ul>
+          <pre id="artifact" aria-label="Prepared artifact preview"></pre>
               <h2>2. Output</h2>
               <p id="summary">No G-code generated yet.</p>
             </div>

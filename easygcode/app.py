@@ -10,6 +10,9 @@ from typing import Any
 
 from pydantic import ValidationError
 
+from .bambu import PrintService, list_profiles
+from .core import DesignSpec, generate_gcode, list_templates
+from .jobs import PrintJob
 from .core import DesignSpec, generate_gcode, list_templates
 
 _FRONTEND_DIR = Path(__file__).with_name("frontend")
@@ -25,12 +28,26 @@ class EasyGcodeRequestHandler(SimpleHTTPRequestHandler):
         if self.path == "/api/templates":
             self._send_json([_dump_model(template) for template in list_templates()])
             return
+        if self.path == "/api/printers":
+            self._send_json([_dump_model(profile) for profile in list_profiles()])
+            return
         if self.path == "/health":
             self._send_json({"status": "ok"})
             return
         super().do_GET()
 
     def do_POST(self) -> None:  # noqa: N802 - stdlib handler API
+        try:
+            payload = json.loads(
+                self.rfile.read(int(self.headers.get("Content-Length", 0))) or b"{}"
+            )
+            if self.path == "/api/gcode":
+                result = generate_gcode(DesignSpec(**payload))
+            elif self.path == "/api/print-jobs/prepare":
+                result = PrintService().prepare(PrintJob(**payload))
+            else:
+                self.send_error(404, "Not found")
+                return
         if self.path != "/api/gcode":
             self.send_error(404, "Not found")
             return
