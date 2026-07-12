@@ -189,3 +189,15 @@ job = PrintJob(
 artifact = PrintService().prepare(job)
 print(artifact.filename)
 ```
+
+### Troubleshooting local startup
+
+If Python reports a syntax error from `easygcode/app.py`, make sure you are running the latest checkout and reinstall from the repository root, not from the `easygcode/` package directory:
+
+```powershell
+cd C:\Users\47292\Downloads\EasyGcode-master\EasyGcode-master
+py -m pip install -e . --force-reinstall
+py -m easygcode.app --host 127.0.0.1 --port 8080
+```
+
+The repository includes a regression test that compiles `easygcode/app.py` so a malformed request handler cannot pass the test suite.
