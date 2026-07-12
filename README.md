@@ -136,3 +136,56 @@ Gleadall, A. (2021). FullControl GCode Designer: open-source software for uncons
  - individual emails:
     - Andy Gleadall - andy@fullcontrol.xyz
     - Dirk Leas - dirk@fullcontrol.xyz
+
+## EasyGcode friendly framework
+
+This fork keeps the existing `fullcontrol` package as the core geometry, visualization, and G-code engine, and adds a lightweight `easygcode` layer for a more approachable workflow.
+
+### What is included
+
+* `easygcode.core`: a small framework API with validated design parameters, reusable templates, and G-code generation powered by `fullcontrol.transform()`.
+* `easygcode.app`: a dependency-light local web server using Python's standard library.
+* `easygcode/frontend`: a responsive browser UI for choosing templates, editing dimensions, generating G-code, and downloading the result.
+
+### Run the frontend
+
+After installing the package locally, start the web app with:
+
+```bash
+easygcode --host 127.0.0.1 --port 8080
+```
+
+Then open <http://127.0.0.1:8080> in a browser.
+
+You can also use the framework directly from Python:
+
+```python
+from easygcode import DesignSpec, generate_gcode
+
+result = generate_gcode(DesignSpec(template="grid", width=60, depth=40, spacing=5))
+print(result.gcode)
+```
+
+### Dual Bambu workflows
+
+EasyGcode now separates print preparation into two modes that share the same `DesignSpec`:
+
+* **Bambu Studio slicing (`bambu_studio`)**: exports a simple STL handoff artifact so Bambu Studio can handle printer, process, filament, AMS, support, preview, and final send-to-printer decisions.
+* **Custom path direct package (`direct`)**: uses the FullControl path engine, adds conservative Bambu-oriented guardrails, validates bounds against a built-in printer profile, and creates a downloadable `.gcode.3mf` package for manual inspection.
+
+The direct path is intentionally limited to local generation, packaging, and download. FTPS upload and MQTT remote start are kept behind placeholder adapter boundaries until they can be validated against specific firmware and user safety requirements.
+
+Programmatic usage:
+
+```python
+from easygcode import DesignSpec, PrintJob
+from easygcode.bambu import PrintService
+
+job = PrintJob(
+    mode="bambu_studio",
+    printer_id="bambu_p1s",
+    design=DesignSpec(template="rectangle", width=80, depth=40),
+)
+artifact = PrintService().prepare(job)
+print(artifact.filename)
+```
